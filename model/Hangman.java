@@ -24,4 +24,8 @@ public class Hangman {
         guess = c; 
     }
 
+    public int getHealth() {
+        return health; 
+    }
+
 }
