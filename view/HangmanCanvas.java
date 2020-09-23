@@ -1,9 +1,7 @@
 package view;
 
-import javax.swing.JFrame;
 import java.awt.Font;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -27,26 +25,42 @@ public class HangmanCanvas extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         state = panel.getGameState();
         if(panel.getGameState() == HangmanPanel.GameState.READY){
-            g2.setColor(Color.BLACK);
+            g2.setColor(Color.blue);
             g2.setFont(new Font("Arial", Font.BOLD, 36));
-            g2.drawString("Press <new> to Start", 80, 300);
+            g2.drawString("Press <new> to Start", 80, 190);
         } else {
             if(state == HangmanPanel.GameState.GAMEOVER) {
-                // Game over screen
+                g2.setColor(Color.red);
+                g2.setFont(new Font("Arial", Font.BOLD, 36));
+                if(panel.getWinFlag()) {
+                    g2.drawString("YOU WON !!!", 40, 80);
+                } else {
+                    g2.drawString("YOU LOST !!!", 40, 80);
+                }
+                g2.setColor(Color.blue);
+                g2.drawString("Press <new> to Start", 40, 130);
+            } else {
+                g2.setColor(Color.BLUE);
+                g2.setFont(new Font("Arial", Font.BOLD, 32));
+                g2.drawString("Health Level", 40, 45);
+                for(int i = 0; i < health; i++) {
+                    g2.drawRect( i * 75 + 40, 65, 65, 70);
+                    g2.fillRect( i * 75 + 40, 65, 65, 70);
+                }
             }
-            g2.setColor(Color.BLUE);
-            g2.setFont(new Font("Arial", Font.BOLD, 32));
-            g2.drawString("Health Level", 40, 35);
-            for(int i = 0; i < health; i++) {
-                g2.drawRect(i * 75 + 15, 75, 120, 200);
-                g2.fillRect(i * 75 + 15, 75, 120, 200);
-            }
-
         }
 
     }
 
     public void setHealth(int h) {
         health = h;
+    }
+
+    public void subtractHealth() {
+        health -= 1; 
+    }
+
+    public int getHealth() {
+        return health; 
     }
 }

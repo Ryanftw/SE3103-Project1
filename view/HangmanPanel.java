@@ -1,30 +1,45 @@
 package view;
 
 import java.awt.Container;
-import java.awt.Dimension;
-
 import controller.ButtonClickListener;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import java.awt.Font;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
+import java.awt.Color;
 
 public class HangmanPanel {
 
+    public class myChar{
+        public char x; 
+        public char y = '*'; 
+        boolean flag = false; 
+
+        public myChar(char x) {
+            this.x = x; 
+        }
+
+        public char getChar() {
+            if(flag) {
+                return x; 
+            } else {
+                return y; 
+            }
+        }
+    }
+
+    private boolean winFlag; 
+    private String hPanelKey; 
+    private myChar[] charArray;
+    private String secret = "";
     private JTextArea gameKey = new JTextArea();
-    private JTextArea playGuess = new JTextArea();
+    private JTextArea secretKey = new JTextArea();
     private JButton[] buttons;
-    private JPanel[] buttonRows = new JPanel[4];
     private GameState state = GameState.READY; 
     private HangmanCanvas canvas;
 
@@ -39,70 +54,67 @@ public class HangmanPanel {
         cp.add(BorderLayout.NORTH, northPanel);
         northPanel.setLayout(new GridLayout(2, 1));
         northPanel.add(gameKey);
-        northPanel.add(playGuess);
+        northPanel.add(secretKey);
+
+        gameKey.setEditable(false);
+        secretKey.setEditable(false);
+        gameKey.setVisible(false);
 
         TitledBorder emptyBorder = BorderFactory.createTitledBorder("");
         gameKey.setBorder(emptyBorder);
-        playGuess.setBorder(emptyBorder);
+        secretKey.setBorder(emptyBorder);
 
         JPanel southPanel = new JPanel(); 
         cp.add(BorderLayout.SOUTH, southPanel); 
         southPanel.setLayout(new GridLayout(4, 7)); 
         ButtonClickListener listener = new ButtonClickListener(this);
-        JPanel buttonPanel1 = new JPanel();
-        JPanel buttonPanel2 = new JPanel();
-        JPanel buttonPanel3 = new JPanel();
-        JPanel buttonPanel4 = new JPanel();
-        for(int i = 0; i < 7; i++) {
-            buttons[i] = new JButton();
-            buttons[i].setPreferredSize(new Dimension(71, 50));
-            buttons[i].addActionListener(listener);   
-            buttonPanel1.add(buttons[i]);
-            buttons[i].setEnabled(false);
-        }
-        southPanel.add(buttonPanel1);
-        for(int i = 7; i < 14; i++) {
-            buttons[i] = new JButton();
-            buttons[i].setPreferredSize(new Dimension(71, 50));
-            buttons[i].addActionListener(listener);
-            buttonPanel2.add(buttons[i]);
-            buttons[i].setEnabled(false);
-        }
-        southPanel.add(buttonPanel2);
-        for(int i = 14; i < 21; i++) {
-            buttons[i] = new JButton();
-            buttons[i].setPreferredSize(new Dimension(71, 50));
-            buttons[i].addActionListener(listener);
-            buttonPanel3.add(buttons[i]);
-            buttons[i].setEnabled(false);
-        }
-        southPanel.add(buttonPanel3);
-        for(int i = 21; i < 27; i++) {
-            buttons[i] = new JButton();
-            buttons[i].setPreferredSize(new Dimension(71, 50));
-            buttons[i].addActionListener(listener);
-            buttonPanel4.add(buttons[i]);
-            buttons[i].setEnabled(false);
-        }
         char x = 97;
         for(int i = 0; i < 26; i++) {
+            buttons[i] = new JButton();
+            buttons[i].addActionListener(listener);   
+            buttons[i].setEnabled(false);
+            southPanel.add(buttons[i]);
             buttons[i].setText(Character.toString(x));
             x++;
         }
-        southPanel.add(buttonPanel4);
-        buttons[26].setPreferredSize(new Dimension(145, 50));
         buttons[26].setText("New");
         buttons[26].setEnabled(true);
-
-        buttonPanel1.setBorder(emptyBorder);
-        buttonPanel2.setBorder(emptyBorder);
-        buttonPanel3.setBorder(emptyBorder);
-        buttonPanel4.setBorder(emptyBorder);
-        
+                
         canvas = new HangmanCanvas(this); 
         cp.add(BorderLayout.CENTER, canvas); 
 
         canvas.repaint();
+    }
+
+    public void setKeyTextField(String key) {
+        gameKey.setText(key);
+        hPanelKey = key;
+        Font font = new Font("Arial", Font.BOLD, 18);
+        gameKey.setFont(font); 
+        gameKey.setForeground(Color.RED);   
+        for(int i = 0; i < key.length(); i++) {
+            secret += "*";
+        }
+        charArray = new myChar[key.length()];
+        for(int j = 0; j < key.length(); j++) {
+            charArray[j] = new myChar(key.charAt(j));
+        }
+        secretKey.setFont(font); 
+        secretKey.setText(secret);
+    }
+
+    public void updateSecretKey(int index, char letter) {
+        charArray[index].flag = true;
+        secret = ""; 
+        for(int i = 0; i < gameKey.getText().length(); i++){
+            secret += charArray[i].getChar();
+        }
+        secretKey.setText(secret);
+        if(secret.equals(hPanelKey)) {
+            this.state = HangmanPanel.GameState.GAMEOVER;
+            this.winFlag = true;
+            canvas.repaint();
+        }
     }
     
     public GameState getGameState() {
@@ -129,4 +141,19 @@ public class HangmanPanel {
         return canvas; 
     }
 
+    public void resetSecret() {
+        secret = ""; 
+    }
+
+    public String getSecret() {
+        return secret; 
+    }
+
+    public void setWinLoss(boolean flag) {
+        winFlag = flag; 
+    }
+
+    public boolean getWinFlag() {
+        return winFlag;
+    }
 }
