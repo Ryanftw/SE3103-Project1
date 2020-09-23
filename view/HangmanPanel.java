@@ -58,7 +58,7 @@ public class HangmanPanel {
 
         gameKey.setEditable(false);
         secretKey.setEditable(false);
-        gameKey.setVisible(false);
+        gameKey.setVisible(true);
 
         TitledBorder emptyBorder = BorderFactory.createTitledBorder("");
         gameKey.setBorder(emptyBorder);
@@ -69,7 +69,7 @@ public class HangmanPanel {
         southPanel.setLayout(new GridLayout(4, 7)); 
         ButtonClickListener listener = new ButtonClickListener(this);
         char x = 97;
-        for(int i = 0; i < 26; i++) {
+        for(int i = 0; i < 27; i++) {
             buttons[i] = new JButton();
             buttons[i].addActionListener(listener);   
             buttons[i].setEnabled(false);
